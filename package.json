@@ -1,6 +1,6 @@
 {
   "name": "urlgray",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Lightweight URL parsing and manipulation library.",
   "main": "index.js",
   "scripts": {
@@ -8,19 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ngokevin/urlgrey"
+    "url": "https://github.com/ngokevin/urlgray"
   },
   "keywords": [
     "url",
     "manipulation",
     "mutate"
   ],
-  "author": "Kevin Ngo",
+  "author": "Kevin Ngo <me@ngokevin.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ngokevin/urlgrey/issues"
+    "url": "https://github.com/ngokevin/urlgray/issues"
   },
-  "homepage": "https://github.com/ngokevin/urlgrey",
+  "homepage": "https://github.com/ngokevin/urlgray",
   "devDependencies": {
     "mocha": "^2.2.5"
   }
