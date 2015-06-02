@@ -3,16 +3,59 @@ var assert = require('assert');
 var Url = require('./index');
 
 
-describe('constructor', function() {
-    it('creates Urlgrey object', function() {
+describe('new Urlgray()', function() {
+    it('initializes object', function() {
         var url = new Url('http://localhost');
         assert.equal(url.url, 'http://localhost');
     });
 });
 
 
+describe('Urlgray.q', function() {
+    it('sets query with key/val args', function() {
+        assert.equal(new Url('http://localhost').q('foo', 'bar'),
+                     'http://localhost?foo=bar');
+    });
+
+    it('appends query with key/val args', function() {
+        assert.equal(new Url('http://localhost/?foo=bar').q('qux', 'qaz'),
+                     'http://localhost/?foo=bar&qux=qaz');
+    });
+
+    it('sets query with object arg', function() {
+        assert.equal(new Url('http://localhost').q({foo: 'bar'}),
+                     'http://localhost?foo=bar');
+    });
+
+    it('appends query with object arg', function() {
+        assert.equal(new Url('http://localhost/?foo=bar').q({qux: 'qaz'}),
+                     'http://localhost/?foo=bar&qux=qaz');
+    });
+
+    it('chains', function() {
+        assert.equal(new Url('http://localhost/').q({foo: 'bar'})
+                                                 .q('qux', 'qaz'),
+                     'http://localhost/?foo=bar&qux=qaz');
+    });
+});
+
+
+describe('Urlgray.unQ', function() {
+    it('removes query', function() {
+        assert.equal(new Url('http://localhost/?foo=bar').unQ('foo'),
+                     'http://localhost/');
+    });
+
+    it('chains', function() {
+        assert.equal(new Url('http://localhost/').q({foo: 'bar'})
+                                                 .unQ('foo'),
+                     'http://localhost/');
+    });
+});
+
+
 describe('_getBase', function() {
-    it('gets base', function() {
+    it('returns base', function() {
         assert.equal(Url._getBase('http://localhost/?foo=bar'),
                      'http://localhost/');
     });
@@ -20,12 +63,12 @@ describe('_getBase', function() {
 
 
 describe('_getQueryString', function() {
-    it('gets querystring', function() {
+    it('returns querystring', function() {
         assert.equal(Url._getQueryString('http://localhost/?foo=bar'),
                      'foo=bar');
     });
 
-    it('gets empty querystring', function() {
+    it('returns empty querystring', function() {
         assert.equal(Url._getQueryString('http://localhost/'),
                      '');
     });
@@ -34,12 +77,86 @@ describe('_getQueryString', function() {
 
 describe('_parseQuery', function() {
     it('parses query', function() {
-        assert.deepEqual(Url._parseQuery('http://localhost/?foo=bar&qux=qaz'),
-                         {foo: 'bar', qux: 'qaz'});
+        assert.deepEqual(
+            Url._parseQuery('http://localhost/?foo=bar&qux=qaz&a=b'),
+            {foo: 'bar', qux: 'qaz', a: 'b'});
     });
 
     it('parses empty query', function() {
         assert.deepEqual(Url._parseQuery('http://localhost/'),
                          {});
+    });
+
+    it('parses array value', function() {
+        assert.deepEqual(Url._parseQuery('http://localhost/?foo=bar&foo=qaz'),
+                         {foo: ['bar', 'qaz']});
+    });
+
+    it('parses three-element array value', function() {
+        assert.deepEqual(
+            Url._parseQuery('http://localhost/?foo=bar&foo=qaz&foo=qux'),
+            {foo: ['bar', 'qaz', 'qux']});
+    });
+});
+
+
+describe('_setQuery', function() {
+    it('sets', function() {
+        assert.equal(Url._setQuery('http://localhost/', 'foo', 'bar'),
+                     'http://localhost/?foo=bar');
+    });
+
+    it('sets with one existing parameter', function() {
+        assert.equal(Url._setQuery('http://localhost/?foo=bar', 'qux', 'qaz'),
+                     'http://localhost/?foo=bar&qux=qaz');
+    });
+
+    it('overwrites', function() {
+        assert.equal(Url._setQuery('http://localhost/?qux=qaz', 'qux', 'bar'),
+                     'http://localhost/?qux=bar');
+    });
+
+    it('overwrites with one existing parameter', function() {
+        assert.equal(Url._setQuery('http://localhost/?foo=bar&qux=qaz', 'qux',
+                                   'bar'),
+                     'http://localhost/?foo=bar&qux=bar');
+    });
+
+    it('handles array value', function() {
+        assert.equal(Url._setQuery('http://localhost/', 'foo',
+                                   ['bar', 'baz']),
+                     'http://localhost/?foo=bar&foo=baz');
+    });
+
+    it('handles array with one existing parameter', function() {
+        assert.equal(Url._setQuery('http://localhost/?qux=qaz', 'foo',
+                                   ['bar', 'baz']),
+                     'http://localhost/?foo=bar&qux=qaz&foo=baz');
+    });
+
+    it('handles array value overwrite', function() {
+        assert.equal(Url._setQuery('http://localhost/?foo=qaz', 'foo',
+                                   ['bar', 'baz']),
+                     'http://localhost/?foo=bar&foo=baz');
+    });
+});
+
+
+describe('_unQuery', function() {
+    it('unsets', function() {
+        assert.equal(Url._unQuery('http://localhost/?foo=bar', 'foo'),
+                     'http://localhost/');
+    });
+
+    it('unsets multiple', function() {
+        assert.equal(Url._unQuery('http://localhost/?foo=bar&qux=qaz&a=b',
+                                  ['foo', 'a']),
+                     'http://localhost/?qux=qaz');
+    });
+
+    it('unsets array', function() {
+        assert.equal(Url._unQuery('http://localhost/?foo=bar&foo=baz',
+                                  ['foo', 'bar']),
+                     'http://localhost/');
     });
 });

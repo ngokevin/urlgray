@@ -8,29 +8,84 @@
   }
 }(this, function () {
     'use strict';
-    function Urlgrey(url) {
+
+    function Urlgray(url) {
+        if (!(this instanceof Urlgray)) {
+            return new Urlgray(url);
+        }
+
         this.url = url;
+        return this;
+    }
 
-        this.q = function(arg1, arg2) {
-            // Set query parameter(s).
-            if (this.arguments.length === 1) {
-                // Parameter is an object containing key-values.
-                Object.keys(arg1).forEach(function(key) {
-                    return _setQuery(this.url, key, arg1[key]);
-                });
-            } else if (this.arguments.length === 2) {
-                // Parameters are a key and a value.
-                return _setQuery(this.url, arg1, arg2);
-            }
-        };
 
-        this.getQ = function() {
-            return _parseQuery(this.url);
-        };
+    Urlgray.prototype.valueOf = Urlgray.prototype.toString = function() {
+        // Give Urlgray a string representation.
+        return this.url;
+    };
+
+    Urlgray.prototype.q = function(arg1, arg2) {
+        // Set query parameter(s).
+        var root = this;
+        var url = root.url;
+
+        if (arguments.length === 1) {
+            // Parameter is an object containing key-values.
+            Object.keys(arg1).forEach(function(key) {
+                root.url = _setQuery(url, key, arg1[key]);
+            });
+        } else if (arguments.length === 2) {
+            // Parameters are a key and a value.
+            root.url = _setQuery(url, arg1, arg2);
+        }
+
+        return root;
+    };
+
+    Urlgray.prototype.getQ = function() {
+        this.url = _parseQuery(this.url);
+        return this;
+    };
+
+    Urlgray.prototype.unQ = function(params) {
+        this.url = _unQuery(this.url, params);
+        return this;
+    };
+
+    function _build(url, queryObj) {
+        // Adds encoded queryObj to base of url.
+        var querystring = _encode(queryObj);
+
+        var search = '';
+        if (querystring) {
+            search = '?' + querystring;
+        }
+        return _getBase(url) + search;
     }
 
     function _decodeURIComponent(url) {
         return decodeURIComponent(url.replace(/\+/g, ' '));
+    }
+
+    function _encode(kwargs) {
+        // Query parameters object to string.
+        if (typeof kwargs === 'string') {
+            return _encodeURIComponent(kwargs);
+        }
+        var params = [];
+        if ('__keywords' in kwargs) {
+            delete kwargs.__keywords;
+        }
+        Object.keys(kwargs).sort().forEach(function(key) {
+            var value = kwargs[key];
+            if (value === undefined) {
+                params.push(encodeURIComponent(key));
+            } else {
+                params.push(encodeURIComponent(key) + '=' +
+                            encodeURIComponent(value));
+            }
+        });
+        return params.join('&');
     }
 
     function _encodeURIComponent(url) {
@@ -78,20 +133,74 @@
                 return !!p[0] && !!p[1];
             })
             .forEach(function(q) {
-                query[q[0]] = q[1];  // To object.
+                // To object.
+                var key = q[0];
+                var val = q[1];
+
+                if (query[key] && query[key].constructor !== Array) {
+                    // If already exists as value, make it an array.
+                    query[key] = [query[key], val];
+                } else if (query[key] && query[key].constructor === Array) {
+                    // If already exists as array, push it.
+                    query[key].push(val);
+                } else {
+                    // Set it.
+                    query[key] = val;
+                }
             });
 
         return query;
     }
 
-    function _setQuery(url, key, val) {
+    function _setQuery(url, key, val, noOverwrite) {
         // Set query on url.
+        var query = _parseQuery(url);
+
+        if (val.constructor === Array) {
+            // Handle setting array value by recursing.
+            url = _unQuery(url, key);
+
+            val.forEach(function(v) {
+                url = _setQuery(url, key, v, true);
+            });
+            return url;
+        } else if (noOverwrite) {
+            var querystring = _encode(query);
+            var newParam = {};
+            newParam[key] = val;
+
+            if (querystring) {
+                return _getBase(url) + '?' + querystring + '&' +
+                       _encode(newParam);
+            } else {
+                return _build(url, newParam);
+            }
+        } else {
+            query[key] = val;
+            return _build(url, query);
+        }
     }
 
-    Urlgrey._getBase= _getBase;
-    Urlgrey._getQueryString= _getQueryString;
-    Urlgrey._setQuery = _setQuery;
-    Urlgrey._parseQuery = _parseQuery;
+    function _unQuery(url, params) {
+        var query = _parseQuery(url);
+        if (params.constructor === String) {
+            params = [params];
+        }
+        params.forEach(function(param) {
+            delete query[param];
+        });
 
-    return Urlgrey;
+        return _build(url, query);
+    }
+
+    Urlgray._decodeURIComponent = _decodeURIComponent;
+    Urlgray._getBase= _getBase;
+    Urlgray._getQueryString= _getQueryString;
+    Urlgray._encode = _encode;
+    Urlgray._encodeURIComponent = _encodeURIComponent;
+    Urlgray._parseQuery = _parseQuery;
+    Urlgray._setQuery = _setQuery;
+    Urlgray._unQuery = _unQuery;
+
+    return Urlgray;
 }));
