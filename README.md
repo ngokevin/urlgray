@@ -3,7 +3,7 @@ urlgray
 
 Lightweight URL parsing and manipulation library.
 
-I'll have an urlgray, 1.5KB min+gzip, hold the sugar.
+I'll have an urlgray, 800B min+gzip, hold the sugar.
 
 ```
 var Url = require('urlgray');
