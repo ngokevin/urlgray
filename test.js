@@ -47,6 +47,24 @@ describe('Urlgray.q', function() {
 });
 
 
+describe('Urlgray.base', function() {
+    it('returns base', function() {
+        var url = new Url('http://localhost/?foo=bar');
+        assert.equal(url.base, 'http://localhost/');
+        assert.equal(url, 'http://localhost/?foo=bar');
+    });
+});
+
+
+describe('Urlgray.query', function() {
+    it('returns query', function() {
+        var url = new Url('http://localhost/?foo=bar');
+        assert.deepEqual(url.query, {foo: 'bar'});
+        assert.equal(url, 'http://localhost/?foo=bar');
+    });
+});
+
+
 describe('Urlgray.unQ', function() {
     it('removes query', function() {
         assert.equal(new Url('http://localhost/?foo=bar').unQ('foo'),

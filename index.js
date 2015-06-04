@@ -18,6 +18,19 @@
         }
 
         this.url = url;
+
+        Object.defineProperty(this, 'base', {
+            get: function() {
+                return _getBase(this.url);
+            }
+        });
+
+        Object.defineProperty(this, 'query', {
+            get: function() {
+                return _parseQuery(this.url);
+            }
+        });
+
         return this;
     }
 
@@ -45,9 +58,12 @@
         return root;
     };
 
-    Urlgray.prototype.getQ = function() {
-        this.url = _parseQuery(this.url);
-        return this;
+    Urlgray.prototype.getQ = function(key) {
+        var q = _parseQuery(this.url);
+        if (key) {
+            return q[key];
+        }
+        return q;
     };
 
     Urlgray.prototype.unQ = function(params) {

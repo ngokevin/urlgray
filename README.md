@@ -13,5 +13,5 @@ Url('http://localhost/')
     .q('baz', 'qux')  // 'http://localhost/?foo=bar&baz=qux'
     .unQ(['foo', 'baz'])  // 'http://localhost/'
     .q({foo: ['bar', 'baz']})  // 'http://localhost/?foo=bar&foo=baz'
-    .getQ()  //  {foo: ['bar', 'baz']}
+    .query  //  {foo: ['bar', 'baz']}
 ```
