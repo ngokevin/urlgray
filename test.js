@@ -6,6 +6,13 @@ var Url = require('./index');
 describe('new Urlgray()', function() {
     it('initializes object', function() {
         var url = new Url('http://localhost');
+        assert.equal(url, 'http://localhost');
+        assert.equal(url.url, 'http://localhost');
+    });
+
+    it('handles double wrapping', function() {
+        var url = new Url(new Url('http://localhost'));
+        assert.equal(url, 'http://localhost');
         assert.equal(url.url, 'http://localhost');
     });
 });

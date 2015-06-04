@@ -13,6 +13,9 @@
         if (!(this instanceof Urlgray)) {
             return new Urlgray(url);
         }
+        if (url instanceof Urlgray) {
+            url = url.url;
+        }
 
         this.url = url;
         return this;
