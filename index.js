@@ -130,7 +130,11 @@
         // If url is not defined, gets from window.search.
         var qs;
         if (!url) {
-            qs = location.search;
+            try {
+              qs = window.location.search;
+            } catch(e) {
+              return {};
+            }
         } else {
             qs = _getQueryString(url);
         }

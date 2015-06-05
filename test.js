@@ -44,6 +44,11 @@ describe('Urlgray.q', function() {
                                                  .q('qux', 'qaz'),
                      'http://localhost/?foo=bar&qux=qaz');
     });
+
+    it('handles empty', function() {
+        assert.equal(Url(''), '');
+        assert.equal(Url('').q({foo: 'bar'}), '?foo=bar');
+    });
 });
 
 
@@ -121,6 +126,10 @@ describe('_parseQuery', function() {
         assert.deepEqual(
             Url._parseQuery('http://localhost/?foo=bar&foo=qaz&foo=qux'),
             {foo: ['bar', 'qaz', 'qux']});
+    });
+
+    it('handles empty', function() {
+        assert.deepEqual(Url._parseQuery(''), {});
     });
 });
 
