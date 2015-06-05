@@ -141,7 +141,7 @@
 
         if (qs[0] === '?') {
             // Strip leading ? if necessary.
-            qs = qs.substring[1];
+            qs = qs.substring(1);
         }
 
         // Parse.

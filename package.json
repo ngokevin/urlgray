@@ -1,6 +1,6 @@
 {
   "name": "urlgray",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Lightweight URL parsing and manipulation library.",
   "main": "index.js",
   "scripts": {
