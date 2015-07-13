@@ -48,7 +48,7 @@
         if (arguments.length === 1) {
             // Parameter is an object containing key-values.
             Object.keys(arg1).forEach(function(key) {
-                root.url = _setQuery(url, key, arg1[key]);
+                root.url = _setQuery(root.url, key, arg1[key]);
             });
         } else if (arguments.length === 2) {
             // Parameters are a key and a value.

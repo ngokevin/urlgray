@@ -30,8 +30,8 @@ describe('Urlgray.q', function() {
     });
 
     it('sets query with object arg', function() {
-        assert.equal(new Url('http://localhost').q({foo: 'bar'}),
-                     'http://localhost?foo=bar');
+        assert.equal(new Url('http://localhost').q({foo: 'bar', qux: 'qaz'}),
+                     'http://localhost?foo=bar&qux=qaz');
     });
 
     it('appends query with object arg', function() {
