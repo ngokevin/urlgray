@@ -5,7 +5,7 @@ Lightweight URL parsing and manipulation library.
 
 I'll have an urlgray, 800B min+gzip, hold the sugar.
 
-```
+```js
 var Url = require('urlgray');
 
 Url('http://localhost/')
